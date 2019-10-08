@@ -77,14 +77,35 @@ ggplot(spdata_with_grades, aes(x = math.score)) +
 # We can see the math scores follow a fairly normal distribution with some outliers (left-skewed).
 
 # Here are the math grades vs. parental level of education
-ggplot(spdata_with_grades, aes(x = paredu , fill = math.grade)) +
+ggplot(spdata_with_grades, aes(x = paredu, fill = math.grade)) +
   geom_bar(position = "dodge") +
   ggtitle("Math Grades Grouped by Parental Level of Education") +
   xlab("Parental Level of Education") +
+  labs(fill = "Math Grade") +
   theme(axis.text.x = element_text(angle = 90))
 
+# And here is a proportional graph of math grades vs. parental level of education
+ggplot(spdata_with_grades, aes(x = paredu, fill = math.grade)) +
+  geom_bar(position = "fill") +
+  ggtitle("Proportion of Math Grades Grouped by Parental Level of Education") +
+  xlab("Parental Level of Education") +
+  ylab("Proportion") +
+  labs(fill = "Math Grade") +
+  theme(axis.text.x = element_text(angle = 90))
+# From this view, we can see that the higher three levels of parental education tend to have a higher proportion of students with As, Bs, and Cs compared to the lower three levels.
+
+# And here is a proportional graph of math grades vs. parental level of education
+ggplot(spdata_with_grades, aes(x = math.grade, fill = paredu)) +
+  geom_bar(position = "fill") +
+  ggtitle("Proportion of Parental Level of Education Grouped by Math Grades") +
+  xlab("Math Grades") +
+  ylab("Proportion") +
+  labs(fill = "Parental Education") +
+  theme(axis.text.x = element_text(angle = 90))
+# When we switch the view, we can easily see the proportion of each type of parental level of education for each math grade.
+
 # Here are the math grades vs. race/ethnicity
-ggplot(spdata_with_grades, aes(x = race.ethnicity , fill = math.grade)) +
+ggplot(spdata_with_grades, aes(x = race.ethnicity, fill = math.grade)) +
   geom_bar(position = "dodge") +
   ggtitle("Math Grades Grouped by Race/Ethnicity") +
   xlab("Parental Level of Education") +
@@ -105,7 +126,7 @@ ggplot(spdata_with_grades, aes(x = paredu , fill = reading.grade)) +
   theme(axis.text.x = element_text(angle = 90))
   
 # Here are the reading grades vs. race/ethnicity
-ggplot(spdata_with_grades, aes(x = race.ethnicity , fill = reading.grade)) +
+ggplot(spdata_with_grades, aes(x = race.ethnicity, fill = reading.grade)) +
   geom_bar(position = "dodge") +
   ggtitle("Reading Grades Grouped by Race/Ethnicity") +
   xlab("Parental Level of Education") +
@@ -119,14 +140,14 @@ ggplot(spdata_with_grades, aes(x = race.ethnicity , fill = reading.grade)) +
 # We can see the writing scores follow a fairly normal distribution and is slightly left-skewed.
 
 # Here are the writing grades vs. parental level of education
-ggplot(spdata_with_grades, aes(x = paredu , fill = writing.grade)) +
+ggplot(spdata_with_grades, aes(x = paredu, fill = writing.grade)) +
   geom_bar(position = "dodge") +
   ggtitle("Writing Grades Grouped by Parental Level of Education") +
   xlab("Parental Level of Education") +
   theme(axis.text.x = element_text(angle = 90))
   
 # Here are the writing grades vs. race/ethnicity
-ggplot(spdata_with_grades, aes(x = race.ethnicity , fill = writing.grade)) +
+ggplot(spdata_with_grades, aes(x = race.ethnicity, fill = writing.grade)) +
   geom_bar(position = "dodge") +
   ggtitle("Writing Grades Grouped by Race/Ethnicity") +
   xlab("Parental Level of Education") +
