@@ -1,5 +1,5 @@
 ---
-title: "exploratory-analysis"
+title: "Exploratory Analysis of Students Performance in Exams"
 author: "Nicolette Johnson"
 date: "October 9, 2019"
 output: html_document
@@ -9,37 +9,150 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Let's load the packages.
 ```{r}
-# Load Packages
+# Load packages
 library(dplyr)
 library(ggplot2)
 ```
 
+Let's now import, clean, and check the data for missing values.
 ```{r}
 # Import raw data
 rawdata <- read.csv(file = "StudentsPerformance.csv", header = TRUE)
 ```
 
+### Cleaning the data
 ```{r}
-# Cleaning the data
 # Checking for missing values:
 cat("There are", sum(is.na(rawdata)), "missing values.")
 ```
 
+Great! Our data contains zero missing values, so we can start looking into the data.
 ```{r}
 # Get a feel for the data
 str(rawdata)
 head(rawdata, n = 10)
 summary(rawdata)
 ```
+Overall, the data is very neat and straightforward. Among the 8 variables, 5 are categorical and 3 are numerical.
 
+Next, let's convert the raw data into a tibble data frame for easier data analysis. It would also be a good idea to convert certain catagorical data into ordinal data. Here, I am creating a new variable called ***paredu*** which contains the parental level of education in an ordered format. This will come in handy later when we look at visualizations.
+
+### Data Manipulation
 ```{r}
-# Data Manipulation #
-
-# Converting raw data into a tibble data frame for easier data analysis
+# Converting raw data into a tibble
 spdata <- as_tibble(rawdata)
 # Converting appropriate categorical data to ordinal data
 paredu <- ordered(spdata$parental.level.of.education, levels = c("some high school", "high school", "some college", "associate's degree", "bachelor's degree", "master's degree"))
 ```
 
+I am interpreting the grading scale as follows:
+
+* A: 90-100
+* B: 80-89
+* C: 70-79
+* D: 60-69
+* F: 0-59
+
+
+```{r}
+# Creating new grade columns based on corresponding scores:
+spdata_with_grades <- spdata %>%
+  mutate(math.grade = case_when(math.score < 60 ~ "F",
+                                math.score >= 60 & math.score <= 69 ~ "D",
+                                math.score >= 70 & math.score <= 79 ~ "C",
+                                math.score >= 80 & math.score <= 89 ~ "B",
+                                math.score >= 90 & math.score <= 100 ~ "A"),
+         reading.grade = case_when(reading.score < 60 ~ "F",
+                                   reading.score >= 60 & reading.score <= 69 ~ "D",
+                                   reading.score >= 70 & reading.score <= 79 ~ "C",
+                                   reading.score >= 80 & reading.score <= 89 ~ "B",
+                                   reading.score >= 90 & reading.score <= 100 ~ "A"),
+         writing.grade = case_when(writing.score < 60 ~ "F",
+                                   writing.score >= 60 & writing.score <= 69 ~ "D",
+                                   writing.score >= 70 & writing.score <= 79 ~ "C",
+                                   writing.score >= 80 & writing.score <= 89 ~ "B",
+                                   writing.score >= 90 & writing.score <= 100 ~ "A"))
+```
+
+
+Just to be safe, let's check for missing data again since I created new "buckets" for grades.
+
+```{r}
+# Checking for missing values again. This time, using the newly-created dataframe:
+cat("There are", sum(is.na(spdata_with_grades)), "missing values.")
+```
+
+It looks like my buckets worked and there are still zero missing values!
+
+Let's look at our data with the newly-added grade columns.
+```{r}
+# Let's look at our data with the new columns:
+str(spdata_with_grades)
+head(spdata_with_grades, n = 10)
+```
+
+We can see that the new columns are listed as characters. Let's convert them to factors with levels using lapply.
+```{r}
+# The new columns need to be converted to factors:
+grades <- c("math.grade", "reading.grade", "writing.grade")
+spdata_with_grades[grades] <- lapply(spdata_with_grades[grades], factor)
+str(spdata_with_grades)
+```
+This will also be useful later when we get into visualization.
+
+Before we move on, let's write the new data into a new file. This will keep our original data intact.
+```{r}
+# Writing to a new file:
+write.csv(spdata_with_grades, file = "StudentsPerformance-wrangled.csv", row.names = FALSE, col.names = TRUE)
+```
+
+### Data Visualization
+```{r}
+# Let's look at math scores
+ggplot(spdata_with_grades, aes(x = math.score)) +
+  geom_histogram() +
+  ggtitle("Math Scores Distribution")
+```
+
+We can see the math scores follow a fairly normal distribution with some outliers (left-skewed).
+
+```{r}
+# Here are the math grades vs. parental level of education
+ggplot(spdata_with_grades, aes(x = paredu, fill = math.grade)) +
+  geom_bar(position = "dodge") +
+  ggtitle("Math Grades Grouped by Parental Level of Education") +
+  xlab("Parental Level of Education") +
+  labs(fill = "Math Grade") +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+This gives us general idea of how the grades look for each type of parental education. However, to get a better understanding, let's look at a proportional graph of the same data:
+
+```{r}
+# Proportional graph of math grades vs. parental level of education
+ggplot(spdata_with_grades, aes(x = paredu, fill = math.grade)) +
+  geom_bar(position = "fill") +
+  ggtitle("Proportion of Math Grades Grouped by Parental Level of Education") +
+  xlab("Parental Level of Education") +
+  ylab("Proportion") +
+  labs(fill = "Math Grade") +
+  theme(axis.text.x = element_text(angle = 90))
+```
+
+From this view, we can see that the higher three levels of parental education tend to have a higher proportion of students with As, Bs, and Cs compared to the lower three levels.
+
+And here is a proportional graph of math grades vs. parental level of education:
+
+```{r}
+# Proportional graph of math grades vs. parental level of education
+ggplot(spdata_with_grades, aes(x = math.grade, fill = paredu)) +
+  geom_bar(position = "fill") +
+  ggtitle("Proportion of Parental Level of Education Grouped by Math Grades") +
+  xlab("Math Grades") +
+  ylab("Proportion") +
+  labs(fill = "Parental Education") +
+  theme(axis.text.x = element_text(angle = 90))
+```
 
