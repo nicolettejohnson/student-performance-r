@@ -1,0 +1,45 @@
+---
+title: "exploratory-analysis"
+author: "Nicolette Johnson"
+date: "October 9, 2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Load Packages
+library(dplyr)
+library(ggplot2)
+```
+
+```{r}
+# Import raw data
+rawdata <- read.csv(file = "StudentsPerformance.csv", header = TRUE)
+```
+
+```{r}
+# Cleaning the data
+# Checking for missing values:
+cat("There are", sum(is.na(rawdata)), "missing values.")
+```
+
+```{r}
+# Get a feel for the data
+str(rawdata)
+head(rawdata, n = 10)
+summary(rawdata)
+```
+
+```{r}
+# Data Manipulation #
+
+# Converting raw data into a tibble data frame for easier data analysis
+spdata <- as_tibble(rawdata)
+# Converting appropriate categorical data to ordinal data
+paredu <- ordered(spdata$parental.level.of.education, levels = c("some high school", "high school", "some college", "associate's degree", "bachelor's degree", "master's degree"))
+```
+
+
