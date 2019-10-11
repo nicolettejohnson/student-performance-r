@@ -4,6 +4,13 @@ author: "Nicolette Johnson"
 date: "October 9, 2019"
 output: html_document
 ---
+<style type="text/css">
+.main-container {
+  max-width: 1800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+</style>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -192,6 +199,8 @@ ggplot(spdata_with_grades, aes(x = race.ethnicity, fill = math.grade)) +
   theme(axis.text.x = element_text(angle = 90))
 ```
 
+We can see that Group E received the highest proportion of As and Bs compared to other groups. It seems as if Group A seems to struggle more in math since the largest proportion of grades are Fs for this group. Group B and C also receive more Fs compared to other grades. 
+
 ```{r}
 ggplot(spdata_with_grades, aes(x = math.grade, fill = race.ethnicity)) +
   geom_bar(position = "fill") +
@@ -200,5 +209,16 @@ ggplot(spdata_with_grades, aes(x = math.grade, fill = race.ethnicity)) +
   ylab("Proportion") +
   labs(fill = "Race/Ethnicity") +
   theme(axis.text.x = element_text(angle = 90))
+```
+
+Here, we can see that of all grades that result in an F, Group C makes up the highest proportion. Whereas for all grades that result in A, Group E makes up the largest proportion.
+
+We can also display these in a faceted barchart in order to compare the distribution of grades among different groups:
+```{r}
+ggplot(spdata_with_grades, aes(x = math.grade)) +
+  geom_bar() +
+  facet_wrap(~race.ethnicity) +
+  ggtitle("Math Grades Distribution by Race/Ethnicity") +
+  xlab("Math Grades")
 ```
 
