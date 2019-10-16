@@ -217,9 +217,9 @@ We can also display these in a faceted barchart in order to compare the distribu
 ```{r}
 ggplot(spdata_with_grades, aes(x = math.grade)) +
   geom_bar() +
-  facet_wrap(~race.ethnicity) +
+  facet_wrap(~race.ethnicity, ncol = 5) +
   ggtitle("Math Grades Distribution by Race/Ethnicity") +
   xlab("Math Grades")
 ```
 
-
+####test push####
