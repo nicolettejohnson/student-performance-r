@@ -18,9 +18,11 @@ knitr::opts_chunk$set(echo = TRUE)
 
 Let's load the packages.
 ```{r}
-# Load packages
+# Install and load packages
 library(dplyr)
 library(ggplot2)
+install.packages("waffle")
+library(waffle)
 ```
 
 Let's now import, clean, and check the data for missing values.
@@ -46,6 +48,7 @@ summary(rawdata)
 ```
 Overall, the data is very neat and straightforward. Among the 8 variables, 5 are categorical and 3 are numerical.
 
+
 Next, let's convert the raw data into a tibble data frame for easier data analysis. It would also be a good idea to convert certain catagorical data into ordinal data. 
 
 ### Data Manipulation
@@ -56,6 +59,20 @@ spdata <- as_tibble(rawdata)
 paredu <- ordered(spdata$parental.level.of.education, levels = c("some high school", "high school", "some college", "associate's degree", "bachelor's degree", "master's degree"))
 ```
 Here, I have created a new variable called ***paredu*** which contains the parental level of education in an ordered format. This will come in handy later when we look at visualizations.
+
+Let's look at the spread of students among different race/ethnicity groups:
+```{r}
+# Waffle chart for race/ethnicity:
+race_counts <- spdata %>%
+  group_by(race.ethnicity) %>%
+    summarize(number_of_students = n()) %>%
+    mutate(percent = round(number_of_students/sum(number_of_students)*100)) # This finds the percentage of the total for each race/enthnicity group
+percent_count <- race_counts$percent # Created an array with the new percent column
+names(percent_count) <-race_counts$race.ethnicity # Named the percent array with the corresponding Group name
+waffle(percent_count, title = "Spread of Students in Each Race/Ethnicity Group")
+```
+With the waffle chart, we can see the spread of students in each race/ethnicity group. Here, each colored square represents 1% of students. For instance, Group A has 9 squares and thus represents 9% of our total students in the dataset.
+
 <br><br>
 
 #### *Grading Scale*
