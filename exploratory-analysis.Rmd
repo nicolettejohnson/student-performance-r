@@ -4,13 +4,6 @@ author: "Nicolette Johnson"
 date: "October 9, 2019"
 output: html_document
 ---
-<style type="text/css">
-.main-container {
-  max-width: 1800px;
-  margin-left: auto;
-  margin-right: auto;
-}
-</style>
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -21,7 +14,7 @@ Let's load the packages.
 # Install and load packages
 library(dplyr)
 library(ggplot2)
-install.packages("waffle")
+install.packages("waffle", repos = "https://cran.r-project.org/web/packages/waffle/index.html")
 library(waffle)
 ```
 
@@ -31,7 +24,13 @@ Let's now import, clean, and check the data for missing values.
 rawdata <- read.csv(file = "StudentsPerformance.csv", header = TRUE)
 ```
 
+<br><br>
+
 ### Cleaning the data
+
+According to the dataset's [page](https://www.kaggle.com/spscientist/students-performance-in-exams) on Kaggle, there is no indication of missing value codes (e.g., -9999 or anything similar).
+
+I will just run a simple check to see if there are any missing values:
 ```{r}
 # Checking for missing values:
 cat("There are", sum(is.na(rawdata)), "missing values.")
@@ -39,7 +38,6 @@ cat("There are", sum(is.na(rawdata)), "missing values.")
 
 Great! Our data contains zero missing values, so we can start looking into the data.
 
-There is also no indication of missing value codes (e.g., -9999 or anything similar) on the dataset page on Kaggle.
 ```{r}
 # Get a feel for the data
 str(rawdata)
@@ -67,13 +65,16 @@ race_counts <- spdata %>%
   group_by(race.ethnicity) %>%
     summarize(number_of_students = n()) %>%
     mutate(percent = round(number_of_students/sum(number_of_students)*100)) # This finds the percentage of the total for each race/enthnicity group
+race_counts # Prints the race_counts table
 percent_count <- race_counts$percent # Created an array with the new percent column
 names(percent_count) <-race_counts$race.ethnicity # Named the percent array with the corresponding Group name
-waffle(percent_count, title = "Spread of Students in Each Race/Ethnicity Group")
+waffle(percent_count, title = "Spread of Students in Each Race/Ethnicity Group",
+       xlab = "1 square = 1% of the total number of students")
 ```
+
 With the waffle chart, we can see the spread of students in each race/ethnicity group. Here, each colored square represents 1% of students. For instance, Group A has 9 squares and thus represents 9% of our total students in the dataset.
 
-<br><br>
+<br>
 
 #### *Grading Scale*
 I am interpreting the grading scale as follows:
@@ -139,7 +140,7 @@ Before we move on, let's write the new data into a new file. This will keep our 
 # Writing to a new file:
 write.csv(spdata_with_grades, file = "StudentsPerformance-wrangled.csv", row.names = FALSE, col.names = TRUE)
 ```
-
+<br><br>
 ### Data Visualization
 ```{r}
 # Let's look at math scores
@@ -239,4 +240,3 @@ ggplot(spdata_with_grades, aes(x = math.grade)) +
   xlab("Math Grades")
 ```
 
-####test push####
