@@ -107,15 +107,39 @@ spdata_with_grades <- spdata %>%
                                    writing.score >= 90 & writing.score <= 100 ~ "A"))
 ```
 
+Let's check to see if my newly-created buckets worked:
 
-Just to be safe, let's check for missing data again since I created new buckets.
+```{r}
+# Checking to see if each new grade has appropriate scores:
+require(gridExtra) # Get the gridExtra package for grid.arrange()
+math_check <- spdata_with_grades %>%
+  ggplot(aes(x = math.grade, y = math.score)) +
+  geom_boxplot() +
+  coord_cartesian(ylim = c(0, 100)) +
+  scale_y_continuous(breaks = seq(0, 100, 5))
+reading_check <- spdata_with_grades %>%
+  ggplot(aes(x = reading.grade, y = reading.score)) +
+  geom_boxplot() +
+  coord_cartesian(ylim = c(0, 100)) +
+  scale_y_continuous(breaks = seq(0, 100, 5))
+writing_check <- spdata_with_grades %>%
+  ggplot(aes(x = writing.grade, y = writing.score)) +
+  geom_boxplot() +
+  coord_cartesian(ylim = c(0, 100)) +
+  scale_y_continuous(breaks = seq(0, 100, 5))
+grid.arrange(math_check, reading_check, writing_check, ncol = 3)
+```
+
+Great, it looks like the buckets catch the appropriate values! It's also good to see the outliers in the data (very low grades, sub-30). Later, we can see if these scores point to the same students or not.
+
+And just to be safe, let's check for missing data again since I created new buckets.
 
 ```{r}
 # Checking for missing values again. This time, using the newly-created dataframe:
 cat("There are", sum(is.na(spdata_with_grades)), "missing values.")
 ```
 
-It looks like my buckets worked and there are still zero missing values!
+It looks there are still zero missing values!
 
 Let's look at our data with the newly-added grade columns.
 ```{r}
