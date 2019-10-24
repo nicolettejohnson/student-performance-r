@@ -6,4 +6,5 @@ This project is a work in progress. I will be adding more to it as time goes on.
 ## Inferences ##
 * What are the major factors influencing exam scores?
 * What is the effectiveness of test preparation courses?
+* Can we identify struggling students?
 * Other inferences
