@@ -17,6 +17,7 @@ Let's load the packages.
 # Install and load packages
 library(dplyr)
 library(ggplot2)
+library(purrr)
 library(gridExtra) # Get the gridExtra package for grid.arrange()
 install.packages("waffle", repos = "https://cran.r-project.org/web/packages/waffle/index.html")
 library(waffle)
@@ -133,7 +134,7 @@ writing_check <- spdata_with_grades %>%
 grid.arrange(math_check, reading_check, writing_check, ncol = 3)
 ```
 
-Great, it looks like the buckets catch the appropriate values! It's also good to see the outliers in the data (very low grades, sub-30). Later, we can see if these scores point to the same students or not. Some students may have low grades in all 3 subjects, or they may have higher grades in one or two subjects but struggle in others. The plan would be to help these struggling students achieve better scores.
+Great, it looks like the buckets catch the appropriate values! It's also good to see the outliers in the data (very low grades, < 30). Later, we can see if these scores point to the same students or not. Some students may have low grades in all 3 subjects, or they may have higher grades in one or two subjects but struggle in others. The plan would be to help these struggling students achieve better scores.
 
 And just to be safe, let's check for missing data again since I created new buckets.
 
@@ -168,7 +169,9 @@ Before we move on, let's write the new data into a new file. This will keep our 
 write.csv(spdata_with_grades, file = "data/StudentsPerformance-wrangled.csv", row.names = FALSE, col.names = TRUE)
 ```
 <br><br>
+
 ### Data Visualization
+
 ```{r}
 # Let's look at math scores
 math_scores_dist <- ggplot(spdata_with_grades, aes(x = math.score)) +
@@ -398,7 +401,7 @@ ggplot(spdata_with_grades, aes(x = math.grade)) +
   xlab("Math Grades")
 ```
 
-Overall, math grades are left-skewed for Groups A, B, and C meaning there are much fewer As than Fs. Group D exhibits a left tail that is far less extreme than the first 3 groups. And Group E seems to almost have a perfectly uniform distribution of grades within the group.
+Overall, math grades are left-skewed for Groups A, B, and C meaning there are much fewer As than Fs. Group D exhibits a left tail that is far less extreme than the first 3 groups. And Group E seems to have an almost perfectly uniform distribution of grades within the group.
 
 ```{r}
 ggplot(spdata_with_grades, aes(x = reading.grade)) +
@@ -408,11 +411,63 @@ ggplot(spdata_with_grades, aes(x = reading.grade)) +
   xlab("Reading Grades")
 ```
 
+Reading grades are left-skewed for Groups A and B. This time, Group C shows a more normal distribution, but is still left-skewed. Group D also exhibits a somewhat normal distribtuion but again is still left-skewed. And Group E also shows a slightly normal distribution for reading grades.
+
 ```{r}
 ggplot(spdata_with_grades, aes(x = writing.grade)) +
   geom_bar() +
   facet_wrap(~race.ethnicity, ncol = 5) +
   ggtitle("Writing Grades Distribution by Race/Ethnicity") +
   xlab("Writing Grades")
+```
+
+Writing grades are left-skewed for Groups A, B, and C. Group D shows a somewhat normal distribtuion but again is still left-skewed. And Group E also shows a slightly normal distribution for writing grades.
+
+
+Remember that in our proportion graphs, Groups A and B seemed to struggle the most as indicated with the most Fs compared to the other groups.
+
+And remember our boxplot of our scores from earlier? Here are just the failing scores:
+
+```{r}
+# Subset the failing scores:
+math_Fs <- spdata_with_grades %>%
+  filter(math.grade == "F") %>%
+  ggplot(aes(x = math.grade, y = math.score)) +
+  geom_boxplot() +
+  coord_cartesian(ylim = c(0, 100)) +
+  scale_y_continuous(breaks = seq(0, 100, 5))
+reading_Fs <- spdata_with_grades %>%
+  filter(reading.grade == "F") %>%
+  ggplot(aes(x = reading.grade, y = reading.score)) +
+  geom_boxplot() +
+  coord_cartesian(ylim = c(0, 100)) +
+  scale_y_continuous(breaks = seq(0, 100, 5))
+writing_Fs <- spdata_with_grades %>%
+  filter(writing.grade == "F") %>%
+  ggplot(aes(x = writing.grade, y = writing.score)) +
+  geom_boxplot() +
+  coord_cartesian(ylim = c(0, 100)) +
+  scale_y_continuous(breaks = seq(0, 100, 5))
+grid.arrange(math_Fs, reading_Fs, writing_Fs, ncol = 3)
+```
+
+The outliers seem to start at scores of 30 and end at 0. The plan is to find out more information about the students behind these scores, (e.g., find out if the student is struggling in all 3 areas or just 1 or 2, find out their demographics and socioeconomic status, etc.)
+
+Let's first look at the data on these students:
+```{r}
+# Create a Student ID field for a unique identifier:
+spdata_with_grades_ID <- tibble::rowid_to_column(spdata_with_grades, "ID")
+# Filter for the <= 30 score students that need help:
+math_below30 <- spdata_with_grades_ID %>%
+  filter(math.score <= 30)
+reading_below30 <- spdata_with_grades_ID %>%
+  filter(reading.score <= 30)
+writing_below30 <- spdata_with_grades_ID %>%
+  filter(writing.score <= 30)
+# Create a union for these 3 sets of data:
+students_below30 <- list(math_below30, reading_below30, writing_below30) %>%
+  reduce(union, by = "ID")
+# Visualize the data:
+
 ```
 
