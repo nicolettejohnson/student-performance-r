@@ -18,8 +18,8 @@ Let's load the packages.
 library(dplyr)
 library(ggplot2)
 library(purrr)
+library(tidyr)
 library(gridExtra) # Get the gridExtra package for grid.arrange()
-install.packages("waffle", repos = "https://cran.r-project.org/web/packages/waffle/index.html")
 library(waffle)
 ```
 
@@ -176,15 +176,21 @@ write.csv(spdata_with_grades, file = "data/StudentsPerformance-wrangled.csv", ro
 # Let's look at math scores
 math_scores_dist <- ggplot(spdata_with_grades, aes(x = math.score)) +
   geom_histogram() +
-  ggtitle("Math Scores Distribution")
+  ggtitle("Math Scores Distribution") +
+  xlab("Math Score") +
+  coord_cartesian(ylim = c(0, 120))
 # Let's look at reading scores
 read_scores_dist <- ggplot(spdata_with_grades, aes(x = reading.score)) +
   geom_histogram() +
-  ggtitle("Reading Scores Distribution")
+  ggtitle("Reading Scores Distribution") +
+  xlab("Reading Score") +
+  coord_cartesian(ylim = c(0, 120))
 # Let's look at writing scores
 writ_scores_dist <- ggplot(spdata_with_grades, aes(x = writing.score)) +
   geom_histogram() +
-  ggtitle("Writing Scores Distribution")
+  ggtitle("Writing Scores Distribution") +
+  xlab("Writing Score") +
+  coord_cartesian(ylim = c(0, 120))
 grid.arrange(math_scores_dist, read_scores_dist, writ_scores_dist, ncol = 3)
 ```
 
@@ -428,24 +434,33 @@ Remember that in our proportion graphs, Groups A and B seemed to struggle the mo
 
 And remember our boxplot of our scores from earlier? Here are just the failing scores:
 
-```{r}
+```{r fig.height = 5, fig.width = 10}
 # Subset the failing scores:
 math_Fs <- spdata_with_grades %>%
   filter(math.grade == "F") %>%
   ggplot(aes(x = math.grade, y = math.score)) +
   geom_boxplot() +
+  ggtitle("Math Scores Below 60") +
+  xlab("Math Grade") +
+  ylab("Math Score") +
   coord_cartesian(ylim = c(0, 100)) +
   scale_y_continuous(breaks = seq(0, 100, 5))
 reading_Fs <- spdata_with_grades %>%
   filter(reading.grade == "F") %>%
   ggplot(aes(x = reading.grade, y = reading.score)) +
-  geom_boxplot() +
+  geom_boxplot()  +
+  ggtitle("Reading Scores Below 60") +
+  xlab("Reading Grade") +
+  ylab("Reading Score") +
   coord_cartesian(ylim = c(0, 100)) +
   scale_y_continuous(breaks = seq(0, 100, 5))
 writing_Fs <- spdata_with_grades %>%
   filter(writing.grade == "F") %>%
   ggplot(aes(x = writing.grade, y = writing.score)) +
   geom_boxplot() +
+  ggtitle("Writing Scores Below 60") +
+  xlab("Writing Grade") +
+  ylab("Writing Score") +
   coord_cartesian(ylim = c(0, 100)) +
   scale_y_continuous(breaks = seq(0, 100, 5))
 grid.arrange(math_Fs, reading_Fs, writing_Fs, ncol = 3)
@@ -454,9 +469,13 @@ grid.arrange(math_Fs, reading_Fs, writing_Fs, ncol = 3)
 The outliers seem to start at scores of 30 and end at 0. The plan is to find out more information about the students behind these scores, (e.g., find out if the student is struggling in all 3 areas or just 1 or 2, find out their demographics and socioeconomic status, etc.)
 
 Let's first look at the data on these students:
-```{r}
+```{r fig.height = 7, fig.width = 10}
 # Create a Student ID field for a unique identifier:
 spdata_with_grades_ID <- tibble::rowid_to_column(spdata_with_grades, "ID")
+
+# Convert new ID variable to factor:
+spdata_with_grades_ID$ID <- as.factor(spdata_with_grades_ID$ID)
+
 # Filter for the <= 30 score students that need help:
 math_below30 <- spdata_with_grades_ID %>%
   filter(math.score <= 30)
@@ -464,10 +483,27 @@ reading_below30 <- spdata_with_grades_ID %>%
   filter(reading.score <= 30)
 writing_below30 <- spdata_with_grades_ID %>%
   filter(writing.score <= 30)
+
 # Create a union for these 3 sets of data:
 students_below30 <- list(math_below30, reading_below30, writing_below30) %>%
   reduce(union, by = "ID")
+
 # Visualize the data:
+students_below30.long <- gather(students_below30, key = "Subject", value = "Score", -ID, -gender, -race.ethnicity, -parental.level.of.education, -lunch, -test.preparation.course, -math.grade, -reading.grade, -writing.grade)
+ggplot(students_below30.long, aes(x = ID, y = Score, fill = Subject)) +
+  geom_col(position = "dodge", color = "black", width = 0.65) +
+  geom_hline(yintercept = 30, linetype = "dotted") +
+  ggtitle("Students with Scores Below 30") +
+  xlab("Student ID") +
+  theme_bw() +
+  coord_flip()
+```
+
+There are 18 students that have a score of 30 or below in at least 1 subject. As we can see, there are some students who score 30 or below in all 3 subjects and some who score higher in one or two other subjects. One student, #60, scored 0 in math and also has the lowest reading and writing scores out of any other student.
+
+Let's look at the characteristics of these struggling students next.
+
+```{r}
 
 ```
 
