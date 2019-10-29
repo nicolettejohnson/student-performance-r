@@ -504,6 +504,63 @@ There are 18 students that have a score of 30 or below in at least 1 subject. As
 Let's look at the characteristics of these struggling students next.
 
 ```{r}
-
+# Look at race/ethnicity:
+# Dummy variable for race/ethnicity:
+students_below30 <- students_below30 %>%
+  mutate(Groups = "Groups")
+students_below30_race_prop <- ggplot(students_below30, aes(x = Groups, fill = race.ethnicity)) +
+  geom_bar(position = "fill", width = 0.5) +
+  ggtitle(wrapper("Proportion of Students Who Scored Below 30 by Race/Ethnicity", width = 20)) +
+  xlab(NULL) +
+  ylab("Proportion") +
+  labs(fill = "Race/Ethnicity")
+# Look at parental level of education:
+# Dummy variable for parental level of education:
+students_below30 <- students_below30 %>%
+  mutate(ParentalEducation = "Parental Education")
+# Create new paredu for updated dataset so data will be in order:
+paredu_below30 <- ordered(students_below30$parental.level.of.education, levels = c("some high school", "high school", "some college", "associate's degree", "bachelor's degree", "master's degree"))
+students_below30_paredu_prop <- ggplot(students_below30, aes(x = ParentalEducation, fill = paredu_below30)) +
+  geom_bar(position = "fill", width = 0.5) +
+  ggtitle(wrapper("Proportion of Students Who Scored Below 30 by Parental Education", width = 20)) +
+  xlab(NULL) +
+  ylab("Proportion") +
+  labs(fill = "Parental Education")
+# Look at lunch type (proxy for socioeconomic status):
+# Dummy variable for lunch:
+students_below30 <- students_below30 %>%
+  mutate(Lunch = "Lunch Type")
+students_below30_lunch_prop <- ggplot(students_below30, aes(x = Lunch, fill = lunch)) +
+  geom_bar(position = "fill", width = 0.5) +
+  ggtitle(wrapper("Proportion of Students Who Scored Below 30 by Lunch Type", width = 20)) +
+  xlab(NULL) +
+  ylab("Proportion") +
+  labs(fill = "Lunch Type")
+# Look at test prep:
+# Dummy variable for test prep:
+students_below30 <- students_below30 %>%
+  mutate(TestPrep = "Test Prep Course")
+students_below30_testprep_prop <- ggplot(students_below30, aes(x = TestPrep, fill = test.preparation.course)) +
+  geom_bar(position = "fill", width = 0.5) +
+  ggtitle(wrapper("Proportion of Students Who Scored Below 30 by Test Prep Course", width = 20)) +
+  xlab(NULL) +
+  ylab("Proportion") +
+  labs(fill = "Test Prep Course")
+grid.arrange(students_below30_race_prop, students_below30_paredu_prop, students_below30_lunch_prop, students_below30_testprep_prop, ncol = 4)
 ```
+
+From these graphs, we can gain information about these struggling students.
+
+A large proportion of the students come from race/ethnicity groups B and C.
+
+Roughly 65% of these students have parents who did not attend college.
+
+In this project, I am using lunch type as a proxy for socioeconomic status. I am assuming that if a student receives free/reduced lunch, they are of low socioeconomic status. Around 85% of these students receive free/reduced lunch and thus are of low socioeconomic status.
+
+And finally, about 88% of these students have not completed a test preparation course.
+
+<br><br>
+
+Let's compare these struggling students to the students who get the highest grades:
+
 
