@@ -503,14 +503,14 @@ There are 18 students that have a score of 30 or below in at least 1 subject. As
 
 Let's look at the characteristics of these struggling students next.
 
-```{r}
+```{r fig.width = 11}
 # Look at race/ethnicity:
 # Dummy variable for race/ethnicity:
 students_below30 <- students_below30 %>%
   mutate(Groups = "Groups")
 students_below30_race_prop <- ggplot(students_below30, aes(x = Groups, fill = race.ethnicity)) +
   geom_bar(position = "fill", width = 0.5) +
-  ggtitle(wrapper("Proportion of Students Who Scored Below 30 by Race/Ethnicity", width = 20)) +
+  ggtitle(wrapper("Proportion of Students Who Scored Below 30 by Race/Ethnicity", width = 25)) +
   xlab(NULL) +
   ylab("Proportion") +
   labs(fill = "Race/Ethnicity")
@@ -522,7 +522,7 @@ students_below30 <- students_below30 %>%
 paredu_below30 <- ordered(students_below30$parental.level.of.education, levels = c("some high school", "high school", "some college", "associate's degree", "bachelor's degree", "master's degree"))
 students_below30_paredu_prop <- ggplot(students_below30, aes(x = ParentalEducation, fill = paredu_below30)) +
   geom_bar(position = "fill", width = 0.5) +
-  ggtitle(wrapper("Proportion of Students Who Scored Below 30 by Parental Education", width = 20)) +
+  ggtitle(wrapper("Proportion of Students Who Scored Below 30 by Parental Education", width = 25)) +
   xlab(NULL) +
   ylab("Proportion") +
   labs(fill = "Parental Education")
@@ -532,7 +532,7 @@ students_below30 <- students_below30 %>%
   mutate(Lunch = "Lunch Type")
 students_below30_lunch_prop <- ggplot(students_below30, aes(x = Lunch, fill = lunch)) +
   geom_bar(position = "fill", width = 0.5) +
-  ggtitle(wrapper("Proportion of Students Who Scored Below 30 by Lunch Type", width = 20)) +
+  ggtitle(wrapper("Proportion of Students Who Scored Below 30 by Lunch Type", width = 25)) +
   xlab(NULL) +
   ylab("Proportion") +
   labs(fill = "Lunch Type")
@@ -542,7 +542,7 @@ students_below30 <- students_below30 %>%
   mutate(TestPrep = "Test Prep Course")
 students_below30_testprep_prop <- ggplot(students_below30, aes(x = TestPrep, fill = test.preparation.course)) +
   geom_bar(position = "fill", width = 0.5) +
-  ggtitle(wrapper("Proportion of Students Who Scored Below 30 by Test Prep Course", width = 20)) +
+  ggtitle(wrapper("Proportion of Students Who Scored Below 30 by Test Prep Course", width = 25)) +
   xlab(NULL) +
   ylab("Proportion") +
   labs(fill = "Test Prep Course")
@@ -583,7 +583,7 @@ students_top18
 
 It looks like that worked and brought us back the top 18 students! Let's celebrate by making more visualizations!
 
-```{r}
+```{r fig.width = 11}
 # Look at race/ethnicity:
 # Dummy variable for race/ethnicity:
 students_top18 <- students_top18 %>%
@@ -635,15 +635,26 @@ A large proportion of the students come from race/ethnicity groups D and E.
 
 Roughly 56% of these students have parents received either bachelor's or master's degrees.
 
-In this project, I am using lunch type as a proxy for socioeconomic status. I am assuming that if a student receives free/reduced lunch, they are of low socioeconomic status. Only 16% of these students receive free/reduced lunch and thus are of low socioeconomic status.
+Only 16% of these students receive free/reduced lunch and thus are of low socioeconomic status.
 
-And finally, about 33% of these students have not completed a test preparation course.
+Lastly, about 33% of these students have not completed a test preparation course.
 
 <br><br>
 
 Let's compare these two groups of students to each other.
 
-```{r}
-
+```{r fig.height = 8, fig.width = 11}
+grid.arrange(students_below30_race_prop, students_top18_race_prop, students_below30_paredu_prop, students_top18_paredu_prop, students_below30_lunch_prop, students_top18_lunch_prop, students_below30_testprep_prop, students_top18_testprep_prop, nrow = 2, ncol = 4)
 ```
 
+Comparing these side-by-side, we can see that there is certainly a difference in race/ethnicity between the 18 students who scored below 30 and the top-performing 18 students. The two biggest race/ethnicity groups for the below-30 students are groups B and C and the two biggest groups the top 18 students are groups D and E. Because there is a big difference in these two sets of students, it indicates correlation. Therefore, these conditions could be potential indicators of having a higher likelihood of achieving higher or lower scores on exams. In other words, if a student is chosen from race/ethnicity Group B, there is a higher chance of that student scoring below 30 on their exams. And a student chosen from Group E has a higher chance of being a top-scoring student.
+
+There is a big difference between the two sets of students for parental education as well. About 65% of the below-30 students have parents who did not attend college. And around 56% of the top students have parents who received either a bachelor's or master's degree. This large disparity indicates there is a correlation between parental education and exam scores. Note that among the below-30 students, there were no parents that obtained a master's degree. Likewise, among the top students, there were no parents that had only a high school diploma.
+
+In this project, I am using lunch type as a proxy for socioeconomic status. I am assuming that if a student receives free/reduced lunch, they are of low socioeconomic status. About 85% of students who scored below 30 receive free/reduced lunch compared to only 16% of the students in the top 18 group. Again, this huge difference indicates correlation between socioeconomic status (lunch type) and exam scores. If a chosen student receives free/reduced lunch, they are much more likely to score lower on exams than if they have a standard lunch.
+
+Finally, there is a large difference in students who take a test preparation course or not. Around 12% of the below-30 students completed a test preparation course compared to about 67% of the top students. Like before, this big difference indicates a correlation between whether a student has taken a test prep course and exam scores. If a chosen student has completed a test prep course, they will likely score higher on the exam than if they did not take the course.
+
+<br><br>
+
+Let's compare these two groups of students to the entire dataset (all 1,000 students).
