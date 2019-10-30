@@ -563,4 +563,87 @@ And finally, about 88% of these students have not completed a test preparation c
 
 Let's compare these struggling students to the students who get the highest grades:
 
+```{r}
+# Create a new combined score column:
+spdata_with_grades_ID <- spdata_with_grades_ID %>% mutate(combined.score = math.score + reading.score + writing.score)
+
+# Let's look at the top 18 students since we had 18 in the struggling student group:
+spdata_with_grades_ID %>% top_n(18, combined.score)
+```
+
+The code brings back 19 students. There is likely a tie in the combined score variable. Let's try to filter for the scores that are 90 and above:
+
+```{r}
+# Filter for the scores that are >= 90:
+students_top18 <- spdata_with_grades_ID %>%
+  top_n(18, combined.score) %>%
+  filter(math.score >= 90 & reading.score >= 90 & writing.score >= 90)
+students_top18
+```
+
+It looks like that worked and brought us back the top 18 students! Let's celebrate by making more visualizations!
+
+```{r}
+# Look at race/ethnicity:
+# Dummy variable for race/ethnicity:
+students_top18 <- students_top18 %>%
+  mutate(Groups = "Groups")
+students_top18_race_prop <- ggplot(students_top18, aes(x = Groups, fill = race.ethnicity)) +
+  geom_bar(position = "fill", width = 0.5) +
+  ggtitle(wrapper("Proportion of The Top 18 Students by Race/Ethnicity", width = 20)) +
+  xlab(NULL) +
+  ylab("Proportion") +
+  labs(fill = "Race/Ethnicity")
+# Look at parental level of education:
+# Dummy variable for parental level of education:
+students_top18 <- students_top18 %>%
+  mutate(ParentalEducation = "Parental Education")
+# Create new paredu for updated dataset so data will be in order:
+paredu_top18 <- ordered(students_top18$parental.level.of.education, levels = c("some high school", "high school", "some college", "associate's degree", "bachelor's degree", "master's degree"))
+students_top18_paredu_prop <- ggplot(students_top18, aes(x = ParentalEducation, fill = paredu_top18)) +
+  geom_bar(position = "fill", width = 0.5) +
+  ggtitle(wrapper("Proportion of The Top 18 Students by Parental Education", width = 20)) +
+  xlab(NULL) +
+  ylab("Proportion") +
+  labs(fill = "Parental Education")
+# Look at lunch type (proxy for socioeconomic status):
+# Dummy variable for lunch:
+students_top18 <- students_top18 %>%
+  mutate(Lunch = "Lunch Type")
+students_top18_lunch_prop <- ggplot(students_top18, aes(x = Lunch, fill = lunch)) +
+  geom_bar(position = "fill", width = 0.5) +
+  ggtitle(wrapper("Proportion of The Top 18 Students by Lunch Type", width = 20)) +
+  xlab(NULL) +
+  ylab("Proportion") +
+  labs(fill = "Lunch Type")
+# Look at test prep:
+# Dummy variable for test prep:
+students_top18 <- students_top18 %>%
+  mutate(TestPrep = "Test Prep Course")
+students_top18_testprep_prop <- ggplot(students_top18, aes(x = TestPrep, fill = test.preparation.course)) +
+  geom_bar(position = "fill", width = 0.5) +
+  ggtitle(wrapper("Proportion of The Top 18 Students by Test Prep Course", width = 20)) +
+  xlab(NULL) +
+  ylab("Proportion") +
+  labs(fill = "Test Prep Course")
+grid.arrange(students_top18_race_prop, students_top18_paredu_prop, students_top18_lunch_prop, students_top18_testprep_prop, ncol = 4)
+```
+
+From these graphs, we can gain information about the top 18 students.
+
+A large proportion of the students come from race/ethnicity groups D and E.
+
+Roughly 56% of these students have parents received either bachelor's or master's degrees.
+
+In this project, I am using lunch type as a proxy for socioeconomic status. I am assuming that if a student receives free/reduced lunch, they are of low socioeconomic status. Only 16% of these students receive free/reduced lunch and thus are of low socioeconomic status.
+
+And finally, about 33% of these students have not completed a test preparation course.
+
+<br><br>
+
+Let's compare these two groups of students to each other.
+
+```{r}
+
+```
 
