@@ -366,7 +366,7 @@ writ_grades_vs_race_prop <- ggplot(spdata_with_grades, aes(x = race.ethnicity, f
 grid.arrange(math_grades_vs_race_prop, read_grades_vs_race_prop, writ_grades_vs_race_prop, ncol = 3)
 ```
 
-We can see that Group E received the highest proportion of As and Bs compared to other groups in all 3 subjects. It seems as if Group A seems to struggle more in all 3 subjects since the largest proportion of grades are Fs for this group.
+We can see that Group E received the highest proportion of As and Bs compared to other groups in all 3 sutbjects. It seems as if Group A seems to struggle more in all 3 subjects since the largest proportion of grades are Fs for this group.
 
 ```{r fig.height = 5, fig.width = 15}
 # Proportional graph of race/ethnicity vs. math grades
@@ -584,6 +584,7 @@ students_top18
 It looks like that worked and brought us back the top 18 students! Let's celebrate by making more visualizations!
 
 ```{r fig.width = 11}
+# Look at top 18:
 # Look at race/ethnicity:
 # Dummy variable for race/ethnicity:
 students_top18 <- students_top18 %>%
@@ -658,3 +659,50 @@ Finally, there is a large difference in students who take a test preparation cou
 <br><br>
 
 Let's compare these two groups of students to the entire dataset (all 1,000 students).
+
+```{r fig.height = 12, fig.width = 11}
+# Look at entire 1,000 students:
+# Look at race/ethnicity:
+# Dummy variable for race/ethnicity:
+spdata_with_grades_ID <- spdata_with_grades_ID %>%
+  mutate(Groups = "Groups")
+spdata_with_grades_ID_race_prop <- ggplot(spdata_with_grades_ID, aes(x = Groups, fill = race.ethnicity)) +
+  geom_bar(position = "fill", width = 0.5) +
+  ggtitle(wrapper("Proportion of All 1,000 Students by Race/Ethnicity", width = 20)) +
+  xlab(NULL) +
+  ylab("Proportion") +
+  labs(fill = "Race/Ethnicity")
+# Look at parental level of education:
+# Dummy variable for parental level of education:
+spdata_with_grades_ID <- spdata_with_grades_ID %>%
+  mutate(ParentalEducation = "Parental Education")
+spdata_with_grades_ID_paredu_prop <- ggplot(spdata_with_grades_ID, aes(x = ParentalEducation, fill = paredu)) +
+  geom_bar(position = "fill", width = 0.5) +
+  ggtitle(wrapper("Proportion of All 1,000 Students by Parental Education", width = 20)) +
+  xlab(NULL) +
+  ylab("Proportion") +
+  labs(fill = "Parental Education")
+# Look at lunch type (proxy for socioeconomic status):
+# Dummy variable for lunch:
+spdata_with_grades_ID <- spdata_with_grades_ID %>%
+  mutate(Lunch = "Lunch Type")
+spdata_with_grades_ID_lunch_prop <- ggplot(spdata_with_grades_ID, aes(x = Lunch, fill = lunch)) +
+  geom_bar(position = "fill", width = 0.5) +
+  ggtitle(wrapper("Proportion of All 1,000 Students by Lunch Type", width = 20)) +
+  xlab(NULL) +
+  ylab("Proportion") +
+  labs(fill = "Lunch Type")
+# Look at test prep:
+# Dummy variable for test prep:
+spdata_with_grades_ID <- spdata_with_grades_ID %>%
+  mutate(TestPrep = "Test Prep Course")
+spdata_with_grades_ID_testprep_prop <- ggplot(spdata_with_grades_ID, aes(x = TestPrep, fill = test.preparation.course)) +
+  geom_bar(position = "fill", width = 0.5) +
+  ggtitle(wrapper("Proportion of All 1,000 Students by Test Prep Course", width = 20)) +
+  xlab(NULL) +
+  ylab("Proportion") +
+  labs(fill = "Test Prep Course")
+grid.arrange(spdata_with_grades_ID_race_prop, students_below30_race_prop, students_top18_race_prop, spdata_with_grades_ID_paredu_prop, students_below30_paredu_prop, students_top18_paredu_prop, spdata_with_grades_ID_lunch_prop, students_below30_lunch_prop, students_top18_lunch_prop, spdata_with_grades_ID_testprep_prop,  students_below30_testprep_prop, students_top18_testprep_prop, nrow = 4, ncol = 3)
+
+```
+
