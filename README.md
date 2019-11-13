@@ -3,6 +3,8 @@ Here is a dataset I found on Kaggle. The purpose of this project is to examine t
 
 This project is a work in progress. I will be adding more to it as time goes on.
 
+Code is contained in the [R Markdown](https://github.com/nicolettejohnson/student-performance-r/blob/master/exploratory-analysis.Rmd) file.
+
 ## Inferences ##
 * What are the major factors influencing exam scores?
 * What is the effectiveness of test preparation courses?
